@@ -14,5 +14,27 @@ jobs:
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
-            - ./node_modules
-      - run: npm run test -- --no-watch --no-progress --
+            - node_modules
+      - run:
+        name: Angular CLI Prod Build
+        command: npm run-script build
+
+  test:
+    working_directory: ~/angularTesting
+    docker:
+      - image: circleci/node:8-browsers
+      steps:
+        - checkout
+        - restore_cache:
+            key: dependency-cache-{{ checksum "package.json" }}
+        - run: 
+            name: Install Dependencies
+            command: npm install
+        - save_cache:
+            key: dependency-cache-{{ checksum "package.json" }}
+            paths:
+              - node_modules
+        - run:
+            name: Run Unit Tests
+            command: npm run-script test
+
