@@ -3,16 +3,16 @@ jobs:
   build:
     working_directory: ~/angularTesting
     docker:
-      - image: circleci/node:8-browsers
+      - image: circleci/node:10.5-browsers-legacy
     steps:
       - checkout
       - restore_cache:
-          key: angularTesting-{{ .Branch }}-{{ checksum "package-lock.json" }}
-      - run: npm install
+          key: dependency-cache-{{ checksum "package.json" }}
+      - run: 
+          name: Install Dependencies
+          command: npm install
       - save_cache:
-          key: angularTesting-{{ .Branch }}-{{ checksum "package-lock.json" }}
+          key: dependency-cache-{{ checksum "package.json" }}
           paths:
-            - "node_modules"
+            - ./node_modules
       - run: npm run test -- --no-watch --no-progress --
-browsers=ChromeHeadlessCI
-      - run: npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
